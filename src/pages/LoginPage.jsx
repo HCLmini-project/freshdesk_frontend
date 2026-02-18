@@ -89,10 +89,12 @@ const LoginPage = () => {
                 <div>
                     <button
                         type="submit"
-                        className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-gradient-to-r from-[#12344D] to-[#2C5CC5] hover:from-[#0e2a3e] hover:to-[#22489c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2C5CC5] transform transition hover:-translate-y-0.5 shadow-lg"
+                        disabled={loading}
+                        className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-[#12344D] to-[#2C5CC5] hover:from-[#0e2a3e] hover:to-[#22489c]'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2C5CC5] transform transition hover:-translate-y-0.5 shadow-lg`}
                     >
-                        Login
+                        {loading ? 'Logging in...' : 'Login'}
                     </button>
+                    {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
                 </div>
 
                 <div className="text-center mt-4">
