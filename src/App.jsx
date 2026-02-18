@@ -1,31 +1,42 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Layout from './layouts/Layout';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import ProtectedRoute from './components/ProtectedRoute';
 import ClientDashboard from './pages/ClientDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import RoleProtectedRoute from './components/RoleProtectedRoute';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Layout><LandingPage /></Layout>} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout><LandingPage /></Layout>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['CLIENT']} />}>
-          <Route path="/client-dashboard" element={<Layout><ClientDashboard /></Layout>} />
-        </Route>
+          <Route
+            path="/client/dashboard"
+            element={
+              <RoleProtectedRoute allowedRole="CLIENT">
+                <Layout><ClientDashboard /></Layout>
+              </RoleProtectedRoute>
+            }
+          />
 
-        <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-          <Route path="/admin-dashboard" element={<Layout><AdminDashboard /></Layout>} />
-        </Route>
-      </Routes>
-    </Router>
+          <Route
+            path="/admin/dashboard"
+            element={
+              <RoleProtectedRoute allowedRole="ADMIN">
+                <Layout><AdminDashboard /></Layout>
+              </RoleProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

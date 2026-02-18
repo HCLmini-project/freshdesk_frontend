@@ -1,19 +1,14 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const ProtectedRoute = ({ allowedRoles }) => {
-    const user = authService.getCurrentUser();
+const ProtectedRoute = ({ children }) => {
+    const { isAuthenticated } = useAuth();
 
-    if (!user) {
+    if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user.role)) {
-        // Redirect to appropriate dashboard if role is not allowed
-        return <Navigate to={user.role === 'ADMIN' ? '/admin-dashboard' : '/client-dashboard'} replace />;
-    }
-
-    return <Outlet />;
+    return children;
 };
 
 export default ProtectedRoute;
