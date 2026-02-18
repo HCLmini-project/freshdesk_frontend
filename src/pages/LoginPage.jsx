@@ -1,11 +1,56 @@
 
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthCard from '../components/AuthCard';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+    const [error, setError] = useState('');
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setError('');
+
+        if (!formData.email || !formData.password) {
+            setError('All fields are required');
+            return;
+        }
+
+        const result = login(formData.email, formData.password);
+
+        if (result.success) {
+            // Redirect based on role
+            const redirectPath = result.user.role === 'CLIENT'
+                ? '/client/dashboard'
+                : '/admin/dashboard';
+            navigate(redirectPath);
+        } else {
+            setError(result.message);
+        }
+    };
+
     return (
         <AuthCard title="Welcome Back" isLogin={true}>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                        {error}
+                    </div>
+                )}
+
                 <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                     <input
@@ -13,6 +58,8 @@ const LoginPage = () => {
                         name="email"
                         type="email"
                         required
+                        value={formData.email}
+                        onChange={handleChange}
                         className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#2C5CC5] focus:border-transparent transition"
                         placeholder="you@example.com"
                     />
@@ -24,6 +71,8 @@ const LoginPage = () => {
                         name="password"
                         type="password"
                         required
+                        value={formData.password}
+                        onChange={handleChange}
                         className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#2C5CC5] focus:border-transparent transition"
                         placeholder="••••••••"
                     />
